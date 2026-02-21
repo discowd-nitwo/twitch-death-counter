@@ -11,4 +11,7 @@ it polls the api every second so there can be a few milliseconds of delay betwee
 
 thanks
 
+## Known Issues
+`If a non-mod runs a command it may crash` -> Working on fixing this
+
 *updates are pushed every once in a while, make sure to check back for any updates*
