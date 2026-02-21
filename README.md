@@ -10,3 +10,5 @@ the port is completely up to you, i use 8888. To use the overlay you make a brow
 it polls the api every second so there can be a few milliseconds of delay between the bot responding in chat and the overlay updating but its pretty fast. feel free to make changes but please credit me for the original code if you do publish it anywhere.
 
 thanks
+
+*updates are pushed every once in a while, make sure to check back for any updates*
