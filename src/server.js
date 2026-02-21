@@ -17,31 +17,52 @@ const client = new tmi.Client({
 
 client.connect().catch(console.error);
 
+client.on('connected', (address, port) => {
+  console.log(`Connected to Twitch chat at ${address}:${port}`);
+  console.log(`Twitch Bot connected as ${client.getUsername()}`)
+});
+
 let deathCount = 0;
 
 client.on('message', (channel, tags, message, self) => {
   if (self) return;
   
   const msg = message.toLowerCase();
+  const args = msg.split(' ');
   
-  if (msg === '!death' || msg === '!died' && tags.mod) {
-    deathCount++;
-    client.say(channel, `Death added. Now ${deathCount} deaths!`);
+  if ((args[0] === '!death' || args[0] === '!died') && (tags.mod || tags['badges'].broadcaster)) {
+    const amount = parseInt(args[1]) || 1;
+    if (amount > 0) {
+      deathCount += amount;
+      console.log(`${tags['display-name']}: added ${amount} deaths. Total: ${deathCount}`);
+      client.say(channel, `@${tags['display-name']}, added ${amount} deaths. Now ${deathCount} deaths!`);
+    }
+  }
+
+  if ((args[0] === '!setdeaths' || args[0] === '!setdeathcount') && (tags.mod || tags['badges'].broadcaster)) {
+    const amount = parseInt(args[1]);
+    if (!isNaN(amount) && amount >= 0) {
+      deathCount = amount;
+      console.log(`${tags['display-name']} set the death count to ${deathCount}`);
+      client.say(channel, `@${tags['display-name']}, death count set to ${deathCount} deaths!`);
+    }
   }
   
   if (msg === '!deaths') {
-    client.say(channel, `Current death count: ${deathCount}`);
+    client.say(channel, `@${tags['display-name']}, current death count: ${deathCount}`);
   }
   
-  if (msg === '!resetdeaths' && tags.mod) {
+  if (msg === '!resetdeaths' && (tags.mod || tags['badges'].broadcaster)) {
     deathCount = 0;
-    client.say(channel, `Deaths reset. Now ${deathCount} deaths!`);
+    console.log(`${tags['display-name']} reset the death count to 0`);
+    client.say(channel, `@${tags['display-name']}, deaths reset. Now ${deathCount} deaths!`);
   }
   
-  if (msg === '!undodeath' && tags.mod) {
+  if (msg === '!undodeath' && (tags.mod || tags['badges'].broadcaster)) {
     if (deathCount > 0) {
       deathCount--;
-      client.say(channel, `Death removed. Now ${deathCount} deaths!`);
+      console.log(`${tags['display-name']} removed 1 death. Total: ${deathCount}`);
+      client.say(channel, `@${tags['display-name']}, death removed. Now ${deathCount} deaths!`);
     }
   }
 });
